@@ -1,0 +1,23 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model bridge {
+  id      Int     @id @default(autoincrement())
+  token   String?
+  guildId String? @map(name: "guild_id")
+
+  discord    String?
+  matrix     String?
+  telegram   String?
+  guilded    String?
+  liberachat String?
+
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+}

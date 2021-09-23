@@ -1,0 +1,31 @@
+{
+  "name": "chat-bridger",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "author": "Tricked",
+  "type": "module",
+  "private": true,
+  "license": "BSD 3-Clause",
+  "scripts": {
+    "build": "yarn tsc",
+    "start": "yarn build && node -r dotenv/config dist/index.js",
+    "studio": "yarn prisma studio"
+  },
+  "dependencies": {
+    "@discordjs/collection": "^0.2.1",
+    "@prisma/client": "3.1.1",
+    "detritus-client-socket": "https://github.com/detritusjs/client-socket",
+    "dotenv": "^10.0.0",
+    "node-fetch": "^3.0.0",
+    "tslog": "^3.2.2"
+  },
+  "devDependencies": {
+    "prettier": "^2.4.1",
+    "prisma": "3.1.1",
+    "discord-api-types": "^0.23.1",
+    "typescript": "^4.4.3"
+  },
+  "prettier": {
+    "printWidth": 2000
+  }
+}
