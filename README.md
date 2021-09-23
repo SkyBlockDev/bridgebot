@@ -1,5 +1,8 @@
 # Bridge bot
 
+![./images/discord.png](images/discord.png)
+![./images/matrix.png](images/matrix.png)
+
 A cool bot that allows you to share chats between multiple platforms
 made to be as animalistic as possible no discord.js or other bloated libs that hog memory
 

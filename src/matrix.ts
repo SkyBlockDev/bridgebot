@@ -6,14 +6,14 @@
 /*   By: Tricked <https://tricked.pro>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:29:23 by tricked           #+#    #+#             */
-/*   Updated: 2021/09/23 13:02:14 by Tricked          ###   ########.fr       */
+/*   Updated: 2021/09/23 13:51:10 by Tricked          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 //SMALLBOT PORTED TO NODEJS LICENSED UNDER THE MIT LICENSE
 //SEE MORE: https://github.com/enimatek-nl/small-bot-matrix
-import type { GateWayManager } from "./manager.js";
 import type { MatrixConfig, MatrixUserProfileResponse, MatrixSyncResponse, MatrixRoomStateResponse, MatrixRoomEvent, MatrixWhoAmIResponse, MatrixJoinedRoomsResponse } from "./matrix.d";
+import type { GateWayManager } from "./manager.js";
 
 import fetch from "node-fetch";
 
