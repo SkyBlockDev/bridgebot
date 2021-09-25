@@ -6,7 +6,7 @@
 /*   By: Tricked <https://tricked.pro>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:29:23 by tricked           #+#    #+#             */
-/*   Updated: 2021/09/25 12:10:57 by Tricked          ###   ########.fr       */
+/*   Updated: 2021/09/25 15:12:14 by Tricked          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,8 +63,10 @@ export class MatrixBot {
       channel,
       `(${chat})${username} said: <b>${content.split(" ").map((x) => {
         const id = x.replace(/<|#|>/gim, "");
-        const user = this.manager.cache.d.users.get(id);
-        return `${user?.username}#${user?.discriminator}` || x;
+        let user = this.manager.cache.d.users.get(id);
+        //@ts-ignore -
+        if (user) user = `${user.username}#${user.discriminator}`;
+        return user || x;
       })}${files?.length && files.length !== 0 ? `<br></br>${files.join("<br></br>")}` : ""}</b>`
     );
   }
