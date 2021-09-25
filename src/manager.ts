@@ -6,32 +6,38 @@
 /*   By: Tricked <https://tricked.pro>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:32:11 by Tricked           #+#    #+#             */
-/*   Updated: 2021/09/23 13:11:58 by Tricked          ###   ########.fr       */
+/*   Updated: 2021/09/25 14:11:17 by Tricked          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import type { GatewayMessageCreateDispatch, GatewayReadyDispatch, GatewayInteractionCreateDispatch, GatewayGuildCreateDispatch } from "discord-api-types/v9";
-import type { SlashCommandNames, SlashCommandOptions } from "./slashCommands";
-import type { MatrixTimelineEvent, MatrixConfig } from "./matrix.d";
-import type { DiscordGatewayOptions } from "./discord.js";
+import type { SlashCommandNames, SlashCommandOptions } from "./discord/slashCommands.js";
+import type { MatrixTimelineEvent, MatrixConfig } from "./matrix/matrix.d";
+import type { DiscordGatewayOptions } from "./discord/discord.js";
+import type { RevoltOptions } from "./revolt.js";
 import type { ENVS } from "./environment.d";
 
+import { slashCommands } from "./discord/slashCommands";
+import { DiscordGateway } from "./discord/discord.js";
+import { MatrixBot } from "./matrix/matrix.js";
 import { LoggerWithoutCallSite } from "tslog";
-import { DiscordGateway } from "./discord.js";
-import { MatrixBot } from "./matrix.js";
-import { Cache } from "./cache.js";
+import { RevoltWebsocket } from "./revolt.js";
+import { Cache } from "./utils/cache.js";
 import prism from "@prisma/client";
 
 type Options = {
   env: ENVS;
   discord: DiscordGatewayOptions;
   matrix: MatrixConfig;
+  revolt: RevoltOptions;
 };
 
 export class GateWayManager extends prism.PrismaClient {
   discord: DiscordGateway;
   matrix: MatrixBot;
+  revolt: RevoltWebsocket;
   logger: LoggerWithoutCallSite;
+  dev: boolean;
   cache: Cache;
   constructor(options: Options) {
     super({
@@ -42,6 +48,7 @@ export class GateWayManager extends prism.PrismaClient {
         },
       ],
     });
+    this.dev = options.env == "DEV";
     this.logger = new LoggerWithoutCallSite({
       exposeStack: false,
       exposeErrorCodeFrame: true,
@@ -50,11 +57,13 @@ export class GateWayManager extends prism.PrismaClient {
     });
     this.discord = new DiscordGateway(this, options.discord);
     this.matrix = new MatrixBot(this, options.matrix);
+    this.revolt = new RevoltWebsocket(this, options.revolt);
     this.cache = new Cache(this);
     //@ts-ignore -
     this.$on("query", (args) => this.logger.info("[QUERY]", args.query));
   }
   async startALL() {
+    this.revolt.connect();
     this.discord.connect(this.discord.gatewayURL);
     await this.matrix.start();
   }
@@ -66,6 +75,7 @@ export class GateWayManager extends prism.PrismaClient {
       select: {
         discord: true,
         matrix: true,
+        revolt: true,
         token: true,
       },
       where: {
@@ -77,6 +87,7 @@ export class GateWayManager extends prism.PrismaClient {
     if (serverData) {
       this.logger.info(`username: ${options.username}`, `${options.chat}@${options.from}`);
     }
+
     if (serverData?.token !== null) return;
     if (serverData?.discord) {
       await this.discord.sendServerMessage({
@@ -95,20 +106,20 @@ export class GateWayManager extends prism.PrismaClient {
         files: options.files,
       });
     }
+    if (serverData?.revolt) {
+      await this.revolt.sendRevoltMessage({
+        channel: serverData.revolt,
+        username: options.username,
+        content: options.content,
+        chat: options.chat,
+        files: options.files,
+      });
+    }
   }
   async discordPacketHandler(data: GatewayMessageCreateDispatch | GatewayInteractionCreateDispatch | GatewayReadyDispatch | GatewayGuildCreateDispatch) {
     if (data.t == "GUILD_CREATE") {
       if (data.d.unavailable) return;
-      let permissions = 0n;
-      permissions |=
-        [...(data.d.roles || []), data.d]
-          .map((id) => BigInt(this.cache.d.roles.get(id.id)?.permissions || 0n) || 0n)
-          // Removes any edge case undefined
-          .filter((perm) => perm)
-          .reduce((bits, perms) => {
-            bits! |= perms!;
-            return bits;
-          }, 0n) || 0n;
+      await this.discord.runRestMethod(`applications/${this.discord.user.id}/guilds/${data.d.id}/commands`, slashCommands, "PUT");
       this.cache.addDiscordGuild(data.d);
       await this.discord.syncSlashCommands();
     }
@@ -132,7 +143,7 @@ export class GateWayManager extends prism.PrismaClient {
         if (name == "help") {
           await this.discord.sendInteractionResponse(interaction, {
             type: 4,
-            data: { content: "Hello im bridge bot and you can use my to connect discord channels and matrix channels\n\nTo get started use /setup <discordchannel> <matrixChannel> then i will send you a code which you can use in the matrix channel to connect them both" },
+            data: { content: "Hello im bridge bot and you can use my to connect discord channels and matrix channels\n\nTo get started use /setup <discordchannel> <matrixChannel> or <revoltchannel> then i will send you a code which you can use in the matrix channel to connect them both" },
           });
         } else if (name == "setup") {
           const roles = this.cache.d.roles.filter((x) => interaction.member?.roles.includes(x.id) || false);
@@ -153,7 +164,7 @@ export class GateWayManager extends prism.PrismaClient {
             });
           const exist = await this.bridge.findFirst({
             where: {
-              OR: [{ discord: options.discord }, { matrix: options.matrix }],
+              OR: [{ discord: options.discord }, { matrix: options.matrix }, { revolt: options.revolt }],
             },
           });
           if (exist)
@@ -168,11 +179,12 @@ export class GateWayManager extends prism.PrismaClient {
               token: token,
               discord: options.discord,
               matrix: options.matrix,
+              revolt: options.revolt,
             },
           });
           await this.discord.sendInteractionResponse(interaction, {
             type: 4,
-            data: { content: `Part one of the setup complete please use \`!link ${token}\` in the matrix chat make sure the bot is added to there too :)` },
+            data: { content: `Part one of the setup complete please use \`!link ${token}\` in the matrix or revolt chat make sure the bot is added to there too :)` },
           });
         }
       }
@@ -193,6 +205,47 @@ export class GateWayManager extends prism.PrismaClient {
         content: message.content,
         chat: "Discord",
         files: message?.attachments?.map((x) => x.url),
+      });
+    }
+  }
+  async RevoltPacketHandler(packet: any) {
+    if (packet.type == "Pong") {
+      this.logger.debug("PONG /REVOLT");
+    }
+    if (packet.type == "Message") {
+      let user = await this.cache.r.getUser(packet.author);
+      if (!user || user?.bot?.owner) return;
+
+      if (packet.content.startsWith("!link")) {
+        const chat = await this.bridge.findFirst({
+          select: {
+            revolt: true,
+            id: true,
+          },
+          where: {
+            token: packet.content.split(" ")[1],
+          },
+        });
+        if (!chat) {
+          return this.revolt.sendMessage(packet.channel, "Invalid token");
+        }
+        await this.bridge.update({
+          where: {
+            id: chat.id,
+          },
+          data: {
+            token: null,
+          },
+        });
+        return this.revolt.sendMessage(packet.channel, "Linking completed");
+      }
+
+      await this.broadCastMessage({
+        username: user?.username,
+        content: packet.content,
+        chat: "Revolt",
+        // avatar: user.avatar.
+        from: packet.channel,
       });
     }
   }

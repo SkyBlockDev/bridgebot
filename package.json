@@ -17,12 +17,14 @@
     "detritus-client-socket": "https://github.com/detritusjs/client-socket",
     "dotenv": "^10.0.0",
     "node-fetch": "^3.0.0",
-    "tslog": "^3.2.2"
+    "tslog": "^3.2.2",
+    "ws": "^8.2.2"
   },
   "devDependencies": {
+    "@types/ws": "^7.4.7",
+    "discord-api-types": "^0.23.1",
     "prettier": "^2.4.1",
     "prisma": "3.1.1",
-    "discord-api-types": "^0.23.1",
     "typescript": "^4.4.3"
   },
   "prettier": {

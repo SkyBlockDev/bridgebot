@@ -6,7 +6,7 @@
 /*   By: Tricked <https://tricked.pro>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:31:53 by Tricked           #+#    #+#             */
-/*   Updated: 2021/09/23 12:42:18 by Tricked          ###   ########.fr       */
+/*   Updated: 2021/09/25 12:11:00 by Tricked          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ declare global {
     interface ProcessEnv {
       DISCORD_TOKEN: string;
       MATRIX_TOKEN: string;
+      REVOLT_TOKEN: string;
       ENVIRONMENT: ENVS;
     }
   }

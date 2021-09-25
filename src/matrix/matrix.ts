@@ -6,14 +6,14 @@
 /*   By: Tricked <https://tricked.pro>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:29:23 by tricked           #+#    #+#             */
-/*   Updated: 2021/09/23 13:51:10 by Tricked          ###   ########.fr       */
+/*   Updated: 2021/09/25 12:10:57 by Tricked          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 //SMALLBOT PORTED TO NODEJS LICENSED UNDER THE MIT LICENSE
 //SEE MORE: https://github.com/enimatek-nl/small-bot-matrix
 import type { MatrixConfig, MatrixUserProfileResponse, MatrixSyncResponse, MatrixRoomStateResponse, MatrixRoomEvent, MatrixWhoAmIResponse, MatrixJoinedRoomsResponse } from "./matrix.d";
-import type { GateWayManager } from "./manager.js";
+import type { GateWayManager } from "../manager.js";
 
 import fetch from "node-fetch";
 
@@ -61,18 +61,11 @@ export class MatrixBot {
   async sendMatrixMessage({ channel, username, content, chat, files }: { channel: string; username: string; content: string; chat: string; files?: string[] }) {
     await this.sendRoomNotice(
       channel,
-      `(${chat})${username} said: <b>${
-        content
-        // .split(" ")
-        // .map((x) => {
-        //   for (const u of message.mentionedUserIds) {
-        //     if (x.includes(u.toString())) {
-        //       return this.client.cache.members.get(u)?.tag || x;
-        //     }
-        //   }
-        //   return x;
-        // })
-      }${files?.length && files.length !== 0 ? `<br></br>${files.join("<br></br>")}` : ""}</b>`
+      `(${chat})${username} said: <b>${content.split(" ").map((x) => {
+        const id = x.replace(/<|#|>/gim, "");
+        const user = this.manager.cache.d.users.get(id);
+        return `${user?.username}#${user?.discriminator}` || x;
+      })}${files?.length && files.length !== 0 ? `<br></br>${files.join("<br></br>")}` : ""}</b>`
     );
   }
   /**

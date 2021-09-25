@@ -17,6 +17,7 @@ model bridge {
   telegram   String?
   guilded    String?
   liberachat String?
+  revolt     String?
 
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")

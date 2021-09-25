@@ -6,7 +6,7 @@
 /*   By: Tricked <https://tricked.pro>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/23 08:22:57 by Tricked           #+#    #+#             */
-/*   Updated: 2021/09/23 14:57:48 by Tricked          ###   ########.fr       */
+/*   Updated: 2021/09/25 12:15:30 by Tricked          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,13 @@ export const slashCommands = [
         type: 3,
         name: "matrix",
         description: "the channel the bot should link to in matrix",
-        required: true,
+        required: false,
+      },
+      {
+        type: 3,
+        name: "revolt",
+        description: "the channel the bot should link to in revolt",
+        required: false,
       },
     ],
   },

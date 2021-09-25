@@ -6,23 +6,18 @@
 /*   By: Tricked <https://tricked.pro>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/23 12:42:33 by Tricked           #+#    #+#             */
-/*   Updated: 2021/09/23 13:02:37 by Tricked          ###   ########.fr       */
+/*   Updated: 2021/09/25 14:09:46 by Tricked          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import type { APIGuild, APIRole, APIChannel, APIUser } from "discord-api-types/v9";
-import type { GateWayManager } from "./manager.js";
+import type { APIGuild, APIChannel, APIUser } from "discord-api-types/v9";
+import type { BridgeGuild, BridgeRole, RevoltUser } from "./cache.d";
+import type { GateWayManager } from "../manager.js";
 
 import { Collection } from "@discordjs/collection";
 
 export class CacheMap<T, V> extends Collection<T, V> {}
-interface BridgeGuild {
-  id: string;
-  name: string;
-}
-interface BridgeRole extends APIRole {
-  guildId: string;
-}
+
 export class Cache {
   constructor(public manager: GateWayManager) {}
   addDiscordGuild(DATA: APIGuild) {
@@ -38,8 +33,22 @@ export class Cache {
       id: DATA.id,
       name: DATA.name,
     };
+
     this.d.guilds.set(guild.id, guild);
   }
+  r = {
+    guilds: new CacheMap<string, BridgeGuild>(),
+    roles: new CacheMap<string, BridgeRole>(),
+    users: new CacheMap<string, RevoltUser>(),
+    members: new CacheMap<string, APIUser>(),
+    channels: new CacheMap<string, APIChannel>(),
+    messages: new CacheMap<string, APIChannel>(),
+    getUser: async (user: string) => {
+      let data = this.r.users.get(user);
+      if (!data) data = await this.manager.revolt.runRestMethod<RevoltUser>(`users/${user}`, undefined, "GET");
+      return data;
+    },
+  };
   d = {
     guilds: new CacheMap<string, BridgeGuild>(),
     roles: new CacheMap<string, BridgeRole>(),

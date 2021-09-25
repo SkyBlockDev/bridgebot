@@ -6,15 +6,15 @@
 /*   By: Tricked <https://tricked.pro>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:32:02 by Tricked           #+#    #+#             */
-/*   Updated: 2021/09/23 13:02:32 by Tricked          ###   ########.fr       */
+/*   Updated: 2021/09/25 14:09:21 by Tricked          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import type { RESTGetAPIChannelWebhooksResult, APIUser, GatewayInteractionCreateDispatchData } from "discord-api-types/v9";
-import type { GateWayManager } from "./manager.js";
+import type { GateWayManager } from "../manager.js";
 
 import { slashCommands } from "./slashCommands.js";
-import { bridgeError } from "./BridgeError.js";
+import { bridgeError } from "../utils/BridgeError.js";
 import { Gateway } from "detritus-client-socket";
 import fetch from "node-fetch";
 export interface DiscordGatewayOptions {
@@ -48,9 +48,9 @@ export class DiscordGateway extends Gateway.Socket {
   }
   async syncSlashCommands(): Promise<Array<any>> {
     let results: any[] = [];
-    for (const guild of this.manager.cache.d.guilds.values()) {
-      await this.runRestMethod(`applications/${this.user.id}/guilds/${guild.id}/commands`, slashCommands, "PUT");
-    }
+    // for (const guild of this.manager.cache.d.guilds.values()) {
+    //   await this.runRestMethod(`applications/${this.user.id}/guilds/${guild.id}/commands`, slashCommands, "PUT");
+    // }
 
     return results;
   }
@@ -92,6 +92,9 @@ export class DiscordGateway extends Gateway.Socket {
         content,
         avatar_url: `${this.avatarURL}${encodeURI(username)}`,
         username: `${username} (${chat})`,
+        allowed_mentions: {
+          parse: [],
+        },
       },
       "POST"
     );

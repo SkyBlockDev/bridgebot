@@ -6,7 +6,7 @@
 /*   By: Tricked <https://tricked.pro>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:31:50 by Tricked           #+#    #+#             */
-/*   Updated: 2021/09/23 12:41:03 by Tricked          ###   ########.fr       */
+/*   Updated: 2021/09/25 12:11:00 by Tricked          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,10 @@ const options = {
     syncTimeout: 20000,
     formatHTMLtoPlain: (html: string) => html.replace(/<[^>]+>/g, ""),
     homeserverUrl: "https://matrix.org",
+  },
+  revolt: {
+    ws: "wss://ws.revolt.chat",
+    session: process.env.REVOLT_TOKEN,
   },
 };
 
