@@ -6,7 +6,7 @@
 /*   By: Tricked <https://tricked.pro>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:32:11 by Tricked           #+#    #+#             */
-/*   Updated: 2021/09/25 14:32:38 by Tricked          ###   ########.fr       */
+/*   Updated: 2021/09/25 15:06:13 by Tricked          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -215,7 +215,7 @@ export class GateWayManager extends prism.PrismaClient {
     if (packet.type == "Message") {
       let user = await this.cache.r.getUser(packet.author);
       if (!user || user?.bot?.owner) return;
-
+      if (user.username == "bridger") return;
       if (packet.content.startsWith("!link")) {
         const chat = await this.bridge.findFirst({
           select: {
