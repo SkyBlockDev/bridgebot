@@ -8,7 +8,8 @@
   "license": "BSD 3-Clause",
   "scripts": {
     "build": "yarn tsc",
-    "start": "yarn build && node -r dotenv/config dist/index.js",
+    "start": "yarn compile && node -r dotenv/config dist/index.js",
+    "compile": "yarn esbuild --platform=node --format=esm src/**/*.ts --outdir=dist --minify-whitespace",
     "studio": "yarn prisma studio"
   },
   "dependencies": {
@@ -23,6 +24,7 @@
   "devDependencies": {
     "@types/ws": "^7.4.7",
     "discord-api-types": "^0.23.1",
+    "esbuild": "^0.13.2",
     "prettier": "^2.4.1",
     "prisma": "3.1.1",
     "typescript": "^4.4.3"

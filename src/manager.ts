@@ -6,7 +6,7 @@
 /*   By: Tricked <https://tricked.pro>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:32:11 by Tricked           #+#    #+#             */
-/*   Updated: 2021/09/25 14:11:17 by Tricked          ###   ########.fr       */
+/*   Updated: 2021/09/25 14:32:38 by Tricked          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ import type { DiscordGatewayOptions } from "./discord/discord.js";
 import type { RevoltOptions } from "./revolt.js";
 import type { ENVS } from "./environment.d";
 
-import { slashCommands } from "./discord/slashCommands";
+import { slashCommands } from "./discord/slashCommands.js";
 import { DiscordGateway } from "./discord/discord.js";
 import { MatrixBot } from "./matrix/matrix.js";
 import { LoggerWithoutCallSite } from "tslog";

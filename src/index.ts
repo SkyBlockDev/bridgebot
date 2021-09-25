@@ -6,7 +6,7 @@
 /*   By: Tricked <https://tricked.pro>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:31:50 by Tricked           #+#    #+#             */
-/*   Updated: 2021/09/25 12:11:00 by Tricked          ###   ########.fr       */
+/*   Updated: 2021/09/25 14:24:02 by Tricked          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,20 @@ const options = {
     token: process.env.DISCORD_TOKEN,
     //Change this if your selfhosting it
     ownerId: "336465356304678913",
+    identifyProperties: {
+      $browser: "node",
+      $device: "node",
+      $os: "nixos",
+      os: "nixos",
+      browser: "node",
+      browser_user_agent: "nodejs/cool",
+      browser_version: "nodejs/cool",
+      distro: "nixos",
+      os_version: "200",
+      os_arch: "x86",
+      release_channel: "stable",
+      window_manager: "sway",
+    },
   },
   matrix: {
     accessToken: process.env.MATRIX_TOKEN,
