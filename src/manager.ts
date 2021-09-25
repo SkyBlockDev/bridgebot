@@ -6,7 +6,7 @@
 /*   By: Tricked <https://tricked.pro>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/22 16:32:11 by Tricked           #+#    #+#             */
-/*   Updated: 2021/09/25 15:06:13 by Tricked          ###   ########.fr       */
+/*   Updated: 2021/09/25 22:03:00 by Tricked          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ export class GateWayManager extends prism.PrismaClient {
     await this.startALL();
   }
   async broadCastMessage(options: { username: string; content: string; chat: string; avatar?: string; from: string; files?: string[] }) {
+    if (!content) return;
     const query: any = {
       select: {
         discord: true,
